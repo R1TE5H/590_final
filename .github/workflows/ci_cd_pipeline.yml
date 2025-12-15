@@ -10,50 +10,66 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Set up Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
 
+      # Install Python dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest
 
+      # Run automated tests
       - name: Run tests
         run: pytest tests/
 
+      # Install LaTeX, Doxygen, Graphviz, and zip
       - name: Install LaTeX and Doxygen
         run: |
           sudo apt-get update
           sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-latex-extra doxygen graphviz zip
 
-      - name: Compute version and inject into LaTeX
+      # Compute version dynamically
+      - name: Compute version
         run: |
           MAJOR=1
           MINOR=0
           CHANGELIST=$(git rev-list --count HEAD)
           VERSION="${MAJOR}.${MINOR}.${CHANGELIST}"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
-          sed -i "s/VERSION_PLACEHOLDER/$VERSION/" docs/report.tex
+          echo "Computed version: $VERSION"
 
+      # Inject version into LaTeX
+      - name: Inject version into LaTeX
+        run: sed -i "s/VERSION_PLACEHOLDER/$VERSION/" docs/report.tex
+
+      # Compile LaTeX PDF
       - name: Compile LaTeX report
         run: pdflatex docs/report.tex -output-directory=docs
 
+      # Generate Doxygen documentation
       - name: Generate Doxygen docs
         run: doxygen Doxyfile
 
+      # Build Docker image with version argument
       - name: Build Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: false
           tags: my_devops_project:latest
+          build-args: |
+            VERSION=${{ env.VERSION }}
 
+      # Package versioned ZIP
       - name: Package versioned ZIP
         run: |
           mkdir -p release

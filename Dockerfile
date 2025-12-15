@@ -17,21 +17,20 @@ COPY Doxyfile .
 # Install LaTeX, Doxygen, Graphviz, and zip
 RUN apt-get update && apt-get install -y \
     texlive-latex-base \
+    texlive-latex-recommended \
+    texlive-latex-extra \
     doxygen \
     graphviz \
     zip \
     git \
     && apt-get clean
 
-# ARG for major/minor version
-ARG MAJOR=1
-ARG MINOR=0
+# Receive version as a build argument
+ARG VERSION=1.0.0
+ENV VERSION=$VERSION
 
-# Compute changelist from Git if available, update LaTeX version, compile PDF, run Doxygen, create ZIP
-RUN CHANGELIST=$(git rev-list --count HEAD 2>/dev/null || echo 0) && \
-    VERSION="${MAJOR}.${MINOR}.${CHANGELIST}" && \
-    echo "Building version: $VERSION" && \
-    sed -i "s/VERSION_PLACEHOLDER/$VERSION/" docs/report.tex && \
+# Inject version into LaTeX, compile PDF, run Doxygen, and create ZIP
+RUN sed -i "s/VERSION_PLACEHOLDER/$VERSION/" docs/report.tex && \
     pdflatex docs/report.tex -output-directory=docs && \
     doxygen Doxyfile && \
     mkdir -p release && \
