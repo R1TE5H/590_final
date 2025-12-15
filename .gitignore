@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.swp
+
+# Virtual environments
+venv/
+.env/
+.env.*
+
+# Docker
+*.log
+*.tmp
+
+# LaTeX build outputs
+*.aux
+*.log
+*.toc
+*.out
+*.pdf  # optional if you want to avoid committing generated report
+
+# Doxygen outputs
+docs/doxygen/html/
+docs/doxygen/latex/
+
+# Release artifacts
+release/*.zip
+
+# MacOS
+.DS_Store
+
+# Node/npm (if any)
+node_modules/

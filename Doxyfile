@@ -1,0 +1,7 @@
+PROJECT_NAME           = "DevOps Project"
+OUTPUT_DIRECTORY       = docs/doxygen
+INPUT                  = src/
+RECURSIVE              = YES
+EXTRACT_ALL            = YES
+GENERATE_HTML           = YES
+GENERATE_LATEX          = NO
